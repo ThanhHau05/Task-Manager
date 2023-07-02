@@ -10,6 +10,12 @@ export interface SelectOptionCategory {
   value: string;
 }
 
+export interface SelectOptionListItem {
+  title: string;
+  description: string;
+  category: string;
+}
+
 export const DROP_DOWN_CATEGORY: SelectOptionCategory[] = [
   {
     title: 'Todo',

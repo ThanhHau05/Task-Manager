@@ -1,8 +1,9 @@
 import type { Dispatch, ReactNode, RefObject, SetStateAction } from 'react';
 import { createContext, useEffect, useRef, useState } from 'react';
 import type { IconType } from 'react-icons';
-import { BiCategory } from 'react-icons/bi';
+import { BiCircle } from 'react-icons/bi';
 
+import type { SelectOptionListItem } from '@/components/constants/select-options';
 import { useClickOutSide } from '@/hooks/useClickOutSide';
 
 interface HomeContextProps {
@@ -17,50 +18,63 @@ interface HomeContextProps {
       error: string;
     }>
   >;
-  handleAddTask: () => void;
   refCOSInputAddTask: RefObject<HTMLDivElement>;
-  categoryclick: boolean;
-  setCategoryClick: Dispatch<SetStateAction<boolean>>;
-  refCOSCategory: RefObject<HTMLDivElement>;
+  descriptionvalue: string;
+  setDescriptionValue: Dispatch<SetStateAction<string>>;
+  handleAddTask: () => void;
   categoryvalue: {
     value: string;
     icon: IconType;
     color: string;
-    error: string;
   };
   setCategoryValue: Dispatch<
     SetStateAction<{
       value: string;
       icon: IconType;
       color: string;
-      error: string;
     }>
   >;
-  handleClickListItemcategory: (
-    value: string,
-    icon: IconType,
-    color: string,
-    error: string
+  refCOSCategory: RefObject<HTMLDivElement>;
+  categoryclick: boolean;
+  setCategoryClick: Dispatch<SetStateAction<boolean>>;
+  todolisttask: SelectOptionListItem[];
+  settodolisttask: Dispatch<SetStateAction<SelectOptionListItem[]>>;
+  inprogresslisttask: SelectOptionListItem[];
+  setinprogresslisttask: Dispatch<SetStateAction<SelectOptionListItem[]>>;
+  donelisttask: SelectOptionListItem[];
+  setdonelisttask: Dispatch<SetStateAction<SelectOptionListItem[]>>;
+  handleStatusChange: (
+    title: string,
+    description: string,
+    newcategory: string,
+    oldcategory: string
   ) => void;
-  handleCheckCategoryClick: () => void;
 }
 
 export const HomeContext = createContext({} as HomeContextProps);
 
 export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
+  const [categoryvalue, setCategoryValue] = useState({
+    value: 'Todo',
+    icon: BiCircle,
+    color: '',
+  });
+  const [categoryclick, setCategoryClick] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [inputaddtask, setInputAddTask] = useState({
     value: '',
     error: '',
   });
-  const [categoryclick, setCategoryClick] = useState(false);
-  const [categoryvalue, setCategoryValue] = useState({
-    value: 'category',
-    icon: BiCategory,
-    color: '',
-    error: '',
-  });
+
+  const [descriptionvalue, setDescriptionValue] = useState('');
+
+  const [todolisttask, settodolisttask] = useState<SelectOptionListItem[]>([]);
+  const [inprogresslisttask, setinprogresslisttask] = useState<
+    SelectOptionListItem[]
+  >([]);
+  const [donelisttask, setdonelisttask] = useState<SelectOptionListItem[]>([]);
 
   useEffect(() => {
     const MyPlaceholder = document.getElementById('Pplaceholder');
@@ -84,53 +98,120 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     if (inputaddtask.error) setInputAddTask({ ...inputaddtask, error: '' });
   });
 
-  const refCOSCategory = useClickOutSide(() => {
-    if (categoryclick) setCategoryClick(false);
-    else if (categoryvalue.error)
-      setCategoryValue({ ...categoryvalue, error: '' });
-  });
-
-  const handleCheckCategoryClick = () => {
-    if (!categoryvalue.error) {
-      setCategoryClick(!categoryclick);
-    } else {
-      setCategoryValue({ ...categoryvalue, error: '' });
-      setCategoryClick(!categoryclick);
+  const handleStatusChange = (
+    title: string,
+    description: string,
+    newcategory: string,
+    oldcategory: string
+  ) => {
+    if (oldcategory === 'Todo') {
+      const listitemremove = todolisttask.filter(
+        (item) => item.title !== title
+      );
+      settodolisttask(listitemremove);
+    } else if (oldcategory === 'In Progress') {
+      const listitemremove = inprogresslisttask.filter(
+        (item) => item.title !== title
+      );
+      setinprogresslisttask(listitemremove);
+    } else if (oldcategory === 'Done') {
+      const listitemremove = donelisttask.filter(
+        (item) => item.title !== title
+      );
+      setdonelisttask(listitemremove);
+    }
+    if (newcategory === 'Todo') {
+      settodolisttask((e) => [
+        {
+          title,
+          description,
+          category: newcategory,
+        },
+        ...e,
+      ]);
+    } else if (newcategory === 'In Progress') {
+      setinprogresslisttask((e) => [
+        {
+          title,
+          description,
+          category: newcategory,
+        },
+        ...e,
+      ]);
+    }
+    if (newcategory === 'Done') {
+      setdonelisttask((e) => [
+        {
+          title,
+          description,
+          category: newcategory,
+        },
+        ...e,
+      ]);
     }
   };
 
   const handleAddTask = () => {
     if (!inputaddtask.value) {
       setInputAddTask({ value: '', error: 'Please enter the task' });
-    } else if (categoryvalue.value !== 'category') {
-      //
     } else {
-      setCategoryValue({ ...categoryvalue, error: 'Please choose a category' });
+      if (categoryvalue.value === 'Todo') {
+        settodolisttask((e) => [
+          ...e,
+          {
+            title: inputaddtask.value,
+            description: descriptionvalue,
+            category: categoryvalue.value,
+          },
+        ]);
+      } else if (categoryvalue.value === 'In Progress') {
+        setinprogresslisttask((e) => [
+          ...e,
+          {
+            title: inputaddtask.value,
+            description: descriptionvalue,
+            category: categoryvalue.value,
+          },
+        ]);
+      } else {
+        setdonelisttask((e) => [
+          ...e,
+          {
+            title: inputaddtask.value,
+            description: descriptionvalue,
+            category: categoryvalue.value,
+          },
+        ]);
+      }
+      setInputAddTask({ value: '', error: '' });
+      setDescriptionValue('');
     }
   };
 
-  const handleClickListItemcategory = (
-    value: string,
-    icon: IconType,
-    color: string
-  ) => {
-    setCategoryValue({ value, icon, color, error: '' });
-    setCategoryClick(false);
-  };
+  const refCOSCategory = useClickOutSide(() => {
+    if (categoryclick) setCategoryClick(false);
+  });
 
   const value = {
     inputRef,
     inputaddtask,
     setInputAddTask,
     handleAddTask,
+    descriptionvalue,
+    setDescriptionValue,
     refCOSInputAddTask,
     categoryclick,
     setCategoryClick,
     refCOSCategory,
     categoryvalue,
     setCategoryValue,
-    handleClickListItemcategory,
-    handleCheckCategoryClick,
+    todolisttask,
+    settodolisttask,
+    inprogresslisttask,
+    setinprogresslisttask,
+    donelisttask,
+    setdonelisttask,
+    handleStatusChange,
   };
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;
 };

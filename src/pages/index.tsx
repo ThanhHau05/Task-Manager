@@ -2,11 +2,18 @@ import { useContext } from 'react';
 
 import { DROP_DOWN_CATEGORY } from '@/components/constants/select-options';
 import { CategoryTable, InputAddTask } from '@/components/pages/home';
-import { DoneContext } from '@/context/done-context';
-import { InProgressContext } from '@/context/inprogress-context';
-import { TodoContext } from '@/context/todo-context';
+import { CategoryProvider } from '@/context/category-context';
+import { DoneContext, DoneProvider } from '@/context/done-context';
+import { HomeContext, HomeContextProvider } from '@/context/home-context';
+import {
+  InProgressContext,
+  InProgressProvider,
+} from '@/context/inprogress-context';
+import { TodoContext, TodoProvider } from '@/context/todo-context';
 
-const Index = () => {
+const IndexContainer = () => {
+  const { todolisttask, inprogresslisttask, donelisttask } =
+    useContext(HomeContext);
   const { checkalltodo, editoptiontodo, setCheckAllTodo, setEditOptionTodo } =
     useContext(TodoContext);
   const {
@@ -29,6 +36,7 @@ const Index = () => {
             onClickEditOptions={setEditOptionTodo}
             editoptions={editoptiontodo}
             data={DROP_DOWN_CATEGORY[0]}
+            listtask={todolisttask}
           />
           <CategoryTable
             checkall={checkallinprogress}
@@ -36,6 +44,7 @@ const Index = () => {
             onClickEditOptions={setEditOptionInProgress}
             editoptions={editoptioninprogress}
             data={DROP_DOWN_CATEGORY[1]}
+            listtask={inprogresslisttask}
           />
           <CategoryTable
             checkall={checkalldone}
@@ -43,10 +52,27 @@ const Index = () => {
             onClickEditOptions={setEditOptionDone}
             editoptions={editoptiondone}
             data={DROP_DOWN_CATEGORY[2]}
+            listtask={donelisttask}
           />
         </div>
       </div>
     </div>
+  );
+};
+
+const Index = () => {
+  return (
+    <CategoryProvider>
+      <HomeContextProvider>
+        <TodoProvider>
+          <InProgressProvider>
+            <DoneProvider>
+              <IndexContainer />
+            </DoneProvider>
+          </InProgressProvider>
+        </TodoProvider>
+      </HomeContextProvider>
+    </CategoryProvider>
   );
 };
 
