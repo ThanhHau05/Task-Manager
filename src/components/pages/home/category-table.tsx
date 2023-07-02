@@ -3,6 +3,7 @@ import { useContext, useState } from 'react';
 import type { IconType } from 'react-icons';
 import { AiFillDelete } from 'react-icons/ai';
 import { BiCircle, BiEdit } from 'react-icons/bi';
+import { BsArrowDownSquare, BsArrowUpSquare, BsPinAngle } from 'react-icons/bs';
 import { LuCheckSquare, LuSquare } from 'react-icons/lu';
 
 import { SimpleButton } from '@/components/button';
@@ -122,18 +123,31 @@ export const CategoryTable = ({
             <div
               // eslint-disable-next-line react/no-array-index-key
               key={index}
-              className="w-full h-auto p-1 px-2 transition-all bg-gray-200 border rounded-md shadow-sm hover:shadow-md border-slate-300"
+              className="flex items-center justify-between w-full h-auto p-1 px-2 transition-all bg-gray-200 border rounded-md shadow-sm hover:shadow-md border-slate-300"
             >
-              <h2>{item.title}</h2>
-              <p>{item.description}</p>
-              <Category
-                index={index}
-                color={data?.color ? data.color : ''}
-                Icon={data?.icon ? data.icon : BiCircle}
-                datatitle={data?.title ? data.title : ''}
-                description={item.description}
-                title={item.title}
-              />
+              <div>
+                <div className="w-10/12 mb-2">
+                  <div className="flex items-center">
+                    <h2 className="mr-3 font-medium">{item.title}</h2>
+                    <BsPinAngle className="cursor-pointer" />
+                  </div>
+                  <p>{item.description}</p>
+                </div>
+                <Category
+                  index={index}
+                  color={data?.color ? data.color : ''}
+                  Icon={data?.icon ? data.icon : BiCircle}
+                  datatitle={data?.title ? data.title : ''}
+                  description={item.description}
+                  title={item.title}
+                />
+              </div>
+              <div className="flex flex-col w-5 gap-2">
+                {index !== 0 && (
+                  <BsArrowUpSquare className="text-lg cursor-pointer" />
+                )}
+                <BsArrowDownSquare className="text-lg cursor-pointer" />
+              </div>
             </div>
           ))}
       </div>
