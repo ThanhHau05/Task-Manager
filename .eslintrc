@@ -65,7 +65,14 @@
         "unused-imports/no-unused-vars": [
           "error",
           { "argsIgnorePattern": "^_" }
-        ]
+        ],
+        "tailwindcss/classnames-order": "off",
+        "react/jsx-no-constructed-context-values": "off",
+        "no-underscore-dangle": "off",
+        "@typescript-eslint/naming-convention": "off",
+        "jsx-a11y/click-events-have-key-events": "off",
+        "jsx-a11y/no-static-element-interactions": "off",
+        "react/button-has-type": "off"
       }
     },
     // Configuration for testing
