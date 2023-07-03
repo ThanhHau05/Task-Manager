@@ -4,8 +4,7 @@ import type { IconType } from 'react-icons';
 import { IoAdd } from 'react-icons/io5';
 
 import { SimpleButton } from '@/components/button';
-import { DROP_DOWN_CATEGORY } from '@/components/constants/select-options';
-import { CategoryContext } from '@/context/category-context';
+import { DROP_DOWN_CATEGORY } from '@/constants/select-options';
 import { HomeContext } from '@/context/home-context';
 
 const SimpleCategory = ({
@@ -17,13 +16,18 @@ const SimpleCategory = ({
   color: string;
   Icon: IconType;
 }) => {
-  const { categoryclick, setCategoryClick, refCOSCategory } =
-    useContext(CategoryContext);
+  // const { categoryclick, setCategoryClick, refCOSCategory } =
+  //   useContext(CategoryContext);
 
-  const { setCategoryValue } = useContext(HomeContext);
+  const {
+    setCategoryValue,
+    categoryclick,
+    setCategoryClick,
+    refCOSCategoryInputAddTask,
+  } = useContext(HomeContext);
 
   return (
-    <div ref={refCOSCategory} className="relative">
+    <div ref={refCOSCategoryInputAddTask} className="relative">
       <SimpleButton onClick={() => setCategoryClick(!categoryclick)}>
         <Icon className={clsx('inline-block mr-2 mt-0.5 h-4 w-4', color)} />
         {value}

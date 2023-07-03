@@ -73,7 +73,8 @@
         "jsx-a11y/click-events-have-key-events": "off",
         "jsx-a11y/no-static-element-interactions": "off",
         "react/button-has-type": "off",
-        "no-lonely-if": "off"
+        "no-lonely-if": "off",
+        "import/no-cycle": "off"
       }
     },
     // Configuration for testing

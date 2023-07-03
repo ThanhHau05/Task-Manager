@@ -14,6 +14,7 @@ export interface SelectOptionListItem {
   title: string;
   description: string;
   category: string;
+  pin: boolean;
 }
 
 export const DROP_DOWN_CATEGORY: SelectOptionCategory[] = [
