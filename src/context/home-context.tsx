@@ -37,7 +37,7 @@ interface HomeContextProps {
   categoryclick: boolean;
   setCategoryClick: Dispatch<SetStateAction<boolean>>;
   todolisttask: SelectOptionListItem[];
-  settodolisttask: Dispatch<SetStateAction<SelectOptionListItem[]>>;
+  setTodoListTask: Dispatch<SetStateAction<SelectOptionListItem[]>>;
   inprogresslisttask: SelectOptionListItem[];
   setInProgressListTask: Dispatch<SetStateAction<SelectOptionListItem[]>>;
   donelisttask: SelectOptionListItem[];
@@ -50,18 +50,31 @@ interface HomeContextProps {
   ) => void;
   handleDropDownClick: (e: number, title: string) => void;
   refCOSCategoryInputAddTask: RefObject<HTMLDivElement>;
-  checkalldone: boolean;
-  setCheckAllDone: Dispatch<SetStateAction<boolean>>;
-  editoptiondone: boolean;
-  setEditOptionDone: Dispatch<SetStateAction<boolean>>;
+  editoptiondone: { status: boolean; title: string };
+  setEditOptionDone: Dispatch<
+    SetStateAction<{ status: boolean; title: string }>
+  >;
   checkallinprogress: boolean;
   setCheckAllInProgress: Dispatch<SetStateAction<boolean>>;
-  editoptioninprogress: boolean;
-  setEditOptionInProgress: Dispatch<SetStateAction<boolean>>;
+  editoptioninprogress: {
+    status: boolean;
+    title: string;
+  };
+  setEditOptionInProgress: Dispatch<
+    SetStateAction<{ status: boolean; title: string }>
+  >;
   checkalltodo: boolean;
   setCheckAllTodo: Dispatch<SetStateAction<boolean>>;
-  editoptiontodo: boolean;
-  setEditOptionTodo: Dispatch<SetStateAction<boolean>>;
+  editoptiontodo: {
+    status: boolean;
+    title: string;
+  };
+  setEditOptionTodo: Dispatch<
+    SetStateAction<{
+      status: boolean;
+      title: string;
+    }>
+  >;
   handlePin: (category: string, index: number) => void;
   handleUnPin: (type: string, listtask: SelectOptionListItem[]) => void;
   handleMoveUp: (index: number, type: string) => void;
@@ -78,6 +91,15 @@ interface HomeContextProps {
       title: string;
     }>
   >;
+  listtaskremove: {
+    todo: number[];
+    inprogress: number[];
+    done: number[];
+  };
+  setListTaskRemove: Dispatch<
+    SetStateAction<{ todo: number[]; inprogress: number[]; done: number[] }>
+  >;
+  handleDeleteTask: (title: string, index: number) => void;
 }
 
 export const HomeContext = createContext({} as HomeContextProps);
@@ -99,7 +121,7 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
 
   const [descriptionvalue, setDescriptionValue] = useState('');
 
-  const [todolisttask, settodolisttask] = useState<SelectOptionListItem[]>([]);
+  const [todolisttask, setTodoListTask] = useState<SelectOptionListItem[]>([]);
   const [inprogresslisttask, setInProgressListTask] = useState<
     SelectOptionListItem[]
   >([]);
@@ -111,14 +133,31 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     title: '',
   });
 
-  const [checkalldone, setCheckAllDone] = useState(false);
-  const [editoptiondone, setEditOptionDone] = useState(false);
-
   const [checkallinprogress, setCheckAllInProgress] = useState(false);
-  const [editoptioninprogress, setEditOptionInProgress] = useState(false);
+  const [editoptiondone, setEditOptionDone] = useState({
+    status: false,
+    title: 'Done',
+  });
+  const [editoptioninprogress, setEditOptionInProgress] = useState({
+    status: false,
+    title: 'In Progress',
+  });
 
+  const [editoptiontodo, setEditOptionTodo] = useState({
+    status: false,
+    title: 'Todo',
+  });
   const [checkalltodo, setCheckAllTodo] = useState(false);
-  const [editoptiontodo, setEditOptionTodo] = useState(false);
+
+  const [listtaskremove, setListTaskRemove] = useState<{
+    todo: number[];
+    inprogress: number[];
+    done: number[];
+  }>({
+    todo: [],
+    inprogress: [],
+    done: [],
+  });
 
   useEffect(() => {
     const MyPlaceholder = document.getElementById('Pplaceholder');
@@ -148,12 +187,11 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     newcategory: string,
     oldcategory: string
   ) => {
-    console.log(title, newcategory, oldcategory);
     if (oldcategory === 'Todo') {
       const listitemremove = todolisttask.filter(
         (item) => item.title !== title
       );
-      settodolisttask(listitemremove);
+      setTodoListTask(listitemremove);
     } else if (oldcategory === 'In Progress') {
       const listitemremove = inprogresslisttask.filter(
         (item) => item.title !== title
@@ -166,7 +204,7 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
       setDoneListTask(listitemremove);
     }
     if (newcategory === 'Todo') {
-      settodolisttask((e) => [
+      setTodoListTask((e) => [
         {
           title,
           description,
@@ -208,7 +246,7 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
       setInputAddTask({ value: '', error: 'Please enter the task' });
     } else {
       if (categoryvalue.value === 'Todo') {
-        settodolisttask((e) => [
+        setTodoListTask((e) => [
           ...e,
           {
             title: inputaddtask.value,
@@ -259,7 +297,7 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
       if (newarray[0]) {
         newarray[0].pin = true;
         updatelist.unshift(newarray[0]);
-        settodolisttask(updatelist);
+        setTodoListTask(updatelist);
       }
     } else if (category === 'In Progress') {
       const updatelist = [...inprogresslisttask];
@@ -285,7 +323,7 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     if (updatlist[0]?.pin) {
       updatlist[0].pin = false;
       if (type === 'Todo') {
-        settodolisttask(updatlist);
+        setTodoListTask(updatlist);
       } else if (type === 'In Progress') {
         setInProgressListTask(updatlist);
       } else if (type === 'Done') {
@@ -302,7 +340,7 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
       if (temp1 && temp2) {
         updatelist[index - 1] = temp2;
         updatelist[index] = temp1;
-        settodolisttask(updatelist);
+        setTodoListTask(updatelist);
       }
     } else if (type === 'In Progress') {
       const updatelist = [...inprogresslisttask];
@@ -333,7 +371,7 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
       if (temp1 && temp2) {
         updatelist[index] = temp2;
         updatelist[index + 1] = temp1;
-        settodolisttask(updatelist);
+        setTodoListTask(updatelist);
       }
     } else if (type === 'In Progress') {
       const updatelist = [...inprogresslisttask];
@@ -356,6 +394,22 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const handleDeleteTask = (title: string, index: number) => {
+    if (title === 'Todo') {
+      const updatelist = [...todolisttask];
+      updatelist.splice(index, 1);
+      setTodoListTask(updatelist);
+    } else if (title === 'In Progress') {
+      const updatelist = [...inprogresslisttask];
+      updatelist.splice(index, 1);
+      setInProgressListTask(updatelist);
+    } else if (title === 'Done') {
+      const updatelist = [...donelisttask];
+      updatelist.splice(index, 1);
+      setDoneListTask(updatelist);
+    }
+  };
+
   const value = {
     inputRef,
     inputaddtask,
@@ -369,7 +423,7 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     categoryvalue,
     setCategoryValue,
     todolisttask,
-    settodolisttask,
+    setTodoListTask,
     inprogresslisttask,
     setInProgressListTask,
     donelisttask,
@@ -379,8 +433,6 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     setDropDownCategory,
     handleDropDownClick,
     refCOSCategoryInputAddTask,
-    checkalldone,
-    setCheckAllDone,
     editoptiondone,
     setEditOptionDone,
     checkallinprogress,
@@ -395,6 +447,9 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     handleUnPin,
     handleMoveUp,
     handleMoveDown,
+    listtaskremove,
+    setListTaskRemove,
+    handleDeleteTask,
   };
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;
 };
