@@ -130,8 +130,17 @@ export const RenderItemListTask = ({
   Icon: IconType;
   datatitle: string;
 }) => {
-  const { handlePin, handleUnPin, handleDeleteTask } = useContext(HomeContext);
-  console.log(listtask);
+  const {
+    handlePin,
+    handleUnPin,
+    handleDeleteTask,
+    edittitleanddescription,
+    setEditTitleAndDescription,
+  } = useContext(HomeContext);
+  console.log(
+    '🚀 ~ file: render-item.tsx:140 ~ edittitleanddescription:',
+    edittitleanddescription
+  );
   return (
     <div>
       {listtask.map((item, index) => (
@@ -150,44 +159,66 @@ export const RenderItemListTask = ({
                   {item.pin ? (
                     <BsPinAngleFill
                       className="cursor-pointer text-red-600 drop-shadow-md hover:scale-125 transition-all"
-                      onClick={() => handleUnPin(item.category, listtask)}
+                      onClick={() =>
+                        !edittitleanddescription.status &&
+                        handleUnPin(item.category, listtask)
+                      }
                     />
                   ) : (
                     <BsPinAngle
                       className="cursor-pointer drop-shadow-md hover:scale-125 transition-all"
-                      onClick={() => handlePin(datatitle, index)}
+                      onClick={() =>
+                        !edittitleanddescription.status &&
+                        handlePin(datatitle, index)
+                      }
                     />
                   )}
                 </div>
                 <h2 className="mx-3 font-medium break-word">{item.title}</h2>
                 <div className="w-4 mr-3">
-                  {' '}
-                  <FaPencilAlt className=" text-slate-400 hover:text-slate-800 transition-all cursor-pointer group-hover:block hidden drop-shadow-md" />
-                </div>
-                <div className="w-4">
-                  <AiFillDelete
-                    className="text-xl cursor-pointer text-slate-400 hover:text-red-500 drop-shadow-md transition-all group-hover:block hidden"
-                    onClick={() => handleDeleteTask(datatitle, index)}
+                  <FaPencilAlt
+                    onClick={() =>
+                      setEditTitleAndDescription({ status: true, index })
+                    }
+                    className="text-slate-400 hover:text-slate-800 transition-all cursor-pointer group-hover:block hidden drop-shadow-md"
                   />
                 </div>
+                {!edittitleanddescription.status && (
+                  <div className="w-4">
+                    <AiFillDelete
+                      className="text-xl cursor-pointer text-slate-400 hover:text-red-500 drop-shadow-md transition-all group-hover:block hidden"
+                      onClick={() => handleDeleteTask(datatitle, index)}
+                    />
+                  </div>
+                )}
               </div>
               <p className="break-word text-sm">{item.description}</p>
             </div>
-            <Category
-              Icon={Icon}
-              color={color}
-              datatitle={datatitle}
-              itemtitle={item.title}
-              description={item.description}
-              index={index}
-            />
+            {!edittitleanddescription.status &&
+            edittitleanddescription.index !== index ? (
+              <Category
+                Icon={Icon}
+                color={color}
+                datatitle={datatitle}
+                itemtitle={item.title}
+                description={item.description}
+                index={index}
+              />
+            ) : (
+              <div className="flex items-center gap-2">
+                <SimpleButton>Cancel</SimpleButton>
+                <SimpleButton>Save</SimpleButton>
+              </div>
+            )}
           </div>
-          <HanleUpDown
-            datatitle={datatitle}
-            index={index}
-            listtask={listtask}
-            pin={item.pin}
-          />
+          {!edittitleanddescription.status && (
+            <HanleUpDown
+              datatitle={datatitle}
+              index={index}
+              listtask={listtask}
+              pin={item.pin}
+            />
+          )}
         </div>
       ))}
     </div>

@@ -100,6 +100,13 @@ interface HomeContextProps {
     SetStateAction<{ todo: number[]; inprogress: number[]; done: number[] }>
   >;
   handleDeleteTask: (title: string, index: number) => void;
+  edittitleanddescription: {
+    status: boolean;
+    index: number;
+  };
+  setEditTitleAndDescription: Dispatch<
+    SetStateAction<{ status: boolean; index: number }>
+  >;
 }
 
 export const HomeContext = createContext({} as HomeContextProps);
@@ -157,6 +164,11 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     todo: [],
     inprogress: [],
     done: [],
+  });
+
+  const [edittitleanddescription, setEditTitleAndDescription] = useState({
+    status: false,
+    index: -1,
   });
 
   useEffect(() => {
@@ -450,6 +462,8 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     listtaskremove,
     setListTaskRemove,
     handleDeleteTask,
+    edittitleanddescription,
+    setEditTitleAndDescription,
   };
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;
 };
