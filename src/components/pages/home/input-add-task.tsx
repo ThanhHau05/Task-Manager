@@ -7,80 +7,6 @@ import { SimpleButton } from '@/components/button';
 import { DROP_DOWN_CATEGORY } from '@/constants/select-options';
 import { HomeContext } from '@/context/home-context';
 
-const SimpleCategory = ({
-  value,
-  color,
-  Icon,
-}: {
-  value: string;
-  color: string;
-  Icon: IconType;
-}) => {
-  // const { categoryclick, setCategoryClick, refCOSCategory } =
-  //   useContext(CategoryContext);
-
-  const {
-    setCategoryValue,
-    categoryclick,
-    setCategoryClick,
-    refCOSCategoryInputAddTask,
-  } = useContext(HomeContext);
-
-  return (
-    <div ref={refCOSCategoryInputAddTask} className="relative">
-      <SimpleButton onClick={() => setCategoryClick(!categoryclick)}>
-        <Icon className={clsx('inline-block mr-2 mt-0.5 h-4 w-4', color)} />
-        {value}
-      </SimpleButton>
-      {categoryclick && (
-        <div className="absolute right-0 z-10 flex flex-col justify-center p-1 mt-2 bg-gray-300 border drop-shadow-sm border-slate-300 rounded-2xl">
-          {DROP_DOWN_CATEGORY.map((item) => (
-            <div
-              key={item.value}
-              className="flex items-center p-1 px-4 cursor-pointer hover:bg-slate-300 rounded-xl"
-              onClick={() => {
-                setCategoryValue({
-                  value: item.title,
-                  icon: item.icon,
-                  color: item.color,
-                });
-                setCategoryClick(!categoryclick);
-              }}
-            >
-              <item.icon className={clsx(item.color, 'h-4 w-4')} />
-              <h2 className="pl-2 font-medium text-gray-900 whitespace-nowrap drop-shadow-md">
-                {item.title}
-              </h2>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ButtonsInInput = () => {
-  const { handleAddTask, categoryvalue } = useContext(HomeContext);
-  return (
-    <div className="flex flex-col items-end justify-center gap-3">
-      <div className="flex items-center">
-        <span className="mr-6">Status</span>
-        <SimpleCategory
-          value={categoryvalue.value}
-          Icon={categoryvalue.icon}
-          color={categoryvalue.color}
-        />
-      </div>
-      <div className="drop-shadow-md">
-        <SimpleButton onClick={() => handleAddTask()}>
-          <IoAdd className="mr-2 text-lg" />
-          Create
-        </SimpleButton>
-      </div>
-    </div>
-  );
-};
-
 export const InputAddTask = () => {
   const {
     inputaddtask,
@@ -125,6 +51,77 @@ export const InputAddTask = () => {
           {inputaddtask.error}
         </span>
       ) : null}
+    </div>
+  );
+};
+
+const SimpleCategory = ({
+  value,
+  color,
+  Icon,
+}: {
+  value: string;
+  color: string;
+  Icon: IconType;
+}) => {
+  const {
+    setCategoryValue,
+    categoryclick,
+    setCategoryClick,
+    refCOSCategoryInputAddTask,
+  } = useContext(HomeContext);
+
+  return (
+    <div ref={refCOSCategoryInputAddTask} className="relative">
+      <SimpleButton onClick={() => setCategoryClick(!categoryclick)}>
+        <Icon className={clsx('inline-block mr-2 mt-0.5 h-4 w-4', color)} />
+        {value}
+      </SimpleButton>
+      {categoryclick ? (
+        <div className="absolute right-0 z-10 flex flex-col justify-center p-1 mt-2 bg-gray-300 border drop-shadow-sm border-slate-300 rounded-2xl">
+          {DROP_DOWN_CATEGORY.map((item) => (
+            <div
+              key={item.value}
+              className="flex items-center p-1 px-4 cursor-pointer hover:bg-slate-300 rounded-xl"
+              onClick={() => {
+                setCategoryValue({
+                  value: item.title,
+                  icon: item.icon,
+                  color: item.color,
+                });
+                setCategoryClick(!categoryclick);
+              }}
+            >
+              <item.icon className={clsx(item.color, 'h-4 w-4')} />
+              <h2 className="pl-2 font-medium text-gray-900 whitespace-nowrap drop-shadow-md">
+                {item.title}
+              </h2>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+const ButtonsInInput = () => {
+  const { handleAddTask, categoryvalue } = useContext(HomeContext);
+  return (
+    <div className="flex flex-col items-end justify-center gap-3">
+      <div className="flex items-center">
+        <span className="mr-6">Status</span>
+        <SimpleCategory
+          value={categoryvalue.value}
+          Icon={categoryvalue.icon}
+          color={categoryvalue.color}
+        />
+      </div>
+      <div className="drop-shadow-md">
+        <SimpleButton onClick={() => handleAddTask()}>
+          <IoAdd className="mr-2 text-lg" />
+          Create
+        </SimpleButton>
+      </div>
     </div>
   );
 };

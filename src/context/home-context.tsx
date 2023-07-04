@@ -103,10 +103,27 @@ interface HomeContextProps {
   edittitleanddescription: {
     status: boolean;
     index: number;
+    title: string;
   };
   setEditTitleAndDescription: Dispatch<
-    SetStateAction<{ status: boolean; index: number }>
+    SetStateAction<{ status: boolean; index: number; title: string }>
   >;
+  edittitletask: string;
+  setEditTitleTask: Dispatch<SetStateAction<string>>;
+  editdescriptiontask: string;
+  setEditDescriptionTask: Dispatch<SetStateAction<string>>;
+  handleEditTitleAndDescription: (
+    index: number,
+    datatitle: string,
+    title: string,
+    description: string
+  ) => void;
+  handleChangeTitleAndDescription: (
+    index: number,
+    datatitle: string,
+    title: string,
+    description: string
+  ) => void;
 }
 
 export const HomeContext = createContext({} as HomeContextProps);
@@ -169,7 +186,11 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
   const [edittitleanddescription, setEditTitleAndDescription] = useState({
     status: false,
     index: -1,
+    title: '',
   });
+
+  const [edittitletask, setEditTitleTask] = useState('');
+  const [editdescriptiontask, setEditDescriptionTask] = useState('');
 
   useEffect(() => {
     const MyPlaceholder = document.getElementById('Pplaceholder');
@@ -422,7 +443,60 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const handleEditTitleAndDescription = (
+    index: number,
+    datatitle: string,
+    title: string,
+    description: string
+  ) => {
+    setEditTitleAndDescription({
+      status: true,
+      index,
+      title: datatitle,
+    });
+    if (description) {
+      setEditDescriptionTask(description);
+    }
+    setEditTitleTask(title);
+  };
+
+  const handleChangeTitleAndDescription = (
+    index: number,
+    datatitle: string,
+    title: string,
+    description: string
+  ) => {
+    setEditTitleAndDescription({
+      status: false,
+      index: -1,
+      title: '',
+    });
+    if (datatitle === 'Todo') {
+      const updatelist = [...todolisttask];
+      updatelist[index]!.title = title;
+      if (description) {
+        updatelist[index]!.description = description;
+      }
+      setTodoListTask(updatelist);
+    } else if (datatitle === 'In Progress') {
+      const updatelist = [...inprogresslisttask];
+      updatelist[index]!.title = title;
+      if (description) {
+        updatelist[index]!.description = description;
+      }
+      setInProgressListTask(updatelist);
+    } else if (datatitle === 'Done') {
+      const updatelist = [...donelisttask];
+      updatelist[index]!.title = title;
+      if (description) {
+        updatelist[index]!.description = description;
+      }
+      setDoneListTask(updatelist);
+    }
+  };
+
   const value = {
+    handleChangeTitleAndDescription,
     inputRef,
     inputaddtask,
     setInputAddTask,
@@ -464,6 +538,11 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
     handleDeleteTask,
     edittitleanddescription,
     setEditTitleAndDescription,
+    edittitletask,
+    setEditTitleTask,
+    editdescriptiontask,
+    setEditDescriptionTask,
+    handleEditTitleAndDescription,
   };
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;
 };

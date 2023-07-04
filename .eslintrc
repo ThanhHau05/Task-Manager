@@ -74,7 +74,8 @@
         "jsx-a11y/no-static-element-interactions": "off",
         "react/button-has-type": "off",
         "no-lonely-if": "off",
-        "import/no-cycle": "off"
+        "import/no-cycle": "off",
+        "@typescript-eslint/no-use-before-define": "off"
       }
     },
     // Configuration for testing

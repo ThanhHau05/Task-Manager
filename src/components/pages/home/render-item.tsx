@@ -64,10 +64,14 @@ const Category = ({
   description: string;
   Icon: IconType;
 }) => {
-  const { dropdowncategory, handleDropDownClick } = useContext(HomeContext);
+  const { dropdowncategory, handleDropDownClick, edittitleanddescription } =
+    useContext(HomeContext);
   return (
     <div className="relative inline-block">
-      <SimpleButton onClick={() => handleDropDownClick(index, datatitle)}>
+      <SimpleButton
+        onClick={() => handleDropDownClick(index, datatitle)}
+        disabled={edittitleanddescription.status}
+      >
         <Icon className={clsx('inline-block mr-2 mt-0.5 h-4 w-4', color)} />
         {datatitle}
       </SimpleButton>
@@ -119,6 +123,39 @@ const HanleUpDown = ({
   );
 };
 
+const HandlePin = ({
+  pin,
+  isEditTitle,
+  category,
+  listtask,
+  datatitle,
+  index,
+}: {
+  pin: boolean;
+  isEditTitle: boolean;
+  category: string;
+  listtask: SelectOptionListItem[];
+  datatitle: string;
+  index: number;
+}) => {
+  const { handlePin, handleUnPin } = useContext(HomeContext);
+  return (
+    <div className="w-4">
+      {pin ? (
+        <BsPinAngleFill
+          className="cursor-pointer text-red-600 drop-shadow-md hover:scale-125 transition-all"
+          onClick={() => isEditTitle && handleUnPin(category, listtask)}
+        />
+      ) : (
+        <BsPinAngle
+          className="cursor-pointer drop-shadow-md hover:scale-125 transition-all"
+          onClick={() => isEditTitle && handlePin(datatitle, index)}
+        />
+      )}
+    </div>
+  );
+};
+
 export const RenderItemListTask = ({
   listtask,
   color,
@@ -131,16 +168,17 @@ export const RenderItemListTask = ({
   datatitle: string;
 }) => {
   const {
-    handlePin,
-    handleUnPin,
     handleDeleteTask,
     edittitleanddescription,
     setEditTitleAndDescription,
+    handleEditTitleAndDescription,
+    handleChangeTitleAndDescription,
+    setEditDescriptionTask,
+    setEditTitleTask,
+    editdescriptiontask,
+    edittitletask,
   } = useContext(HomeContext);
-  console.log(
-    '🚀 ~ file: render-item.tsx:140 ~ edittitleanddescription:',
-    edittitleanddescription
-  );
+
   return (
     <div>
       {listtask.map((item, index) => (
@@ -148,54 +186,100 @@ export const RenderItemListTask = ({
           // eslint-disable-next-line react/no-array-index-key
           key={index}
           className={clsx(
-            'flex group items-center justify-between w-full h-auto p-1 px-2 transition-all bg-gray-200 border rounded-md shadow-sm hover:shadow-md border-slate-300',
+            'flex group items-center justify-between w-full h-auto p-1 px-2 transition-all bg-gray-200 border rounded-md shadow-sm hover:shadow-lg border-slate-300',
             item.pin ? 'mb-2' : 'mb-1'
           )}
         >
-          <div className="w-full mr-4">
+          <div className="w-full">
             <div className="mb-2">
               <div className="flex items-center mb-2">
-                <div className="w-4">
-                  {item.pin ? (
-                    <BsPinAngleFill
-                      className="cursor-pointer text-red-600 drop-shadow-md hover:scale-125 transition-all"
-                      onClick={() =>
-                        !edittitleanddescription.status &&
-                        handleUnPin(item.category, listtask)
-                      }
-                    />
-                  ) : (
-                    <BsPinAngle
-                      className="cursor-pointer drop-shadow-md hover:scale-125 transition-all"
-                      onClick={() =>
-                        !edittitleanddescription.status &&
-                        handlePin(datatitle, index)
-                      }
-                    />
-                  )}
-                </div>
-                <h2 className="mx-3 font-medium break-word">{item.title}</h2>
-                <div className="w-4 mr-3">
-                  <FaPencilAlt
-                    onClick={() =>
-                      setEditTitleAndDescription({ status: true, index })
-                    }
-                    className="text-slate-400 hover:text-slate-800 transition-all cursor-pointer group-hover:block hidden drop-shadow-md"
+                <HandlePin
+                  category={item.category}
+                  datatitle={datatitle}
+                  index={index}
+                  isEditTitle={!edittitleanddescription.status}
+                  listtask={listtask}
+                  pin={item.pin}
+                />
+                {edittitleanddescription.title === datatitle &&
+                edittitleanddescription.index === index &&
+                edittitleanddescription.status ? (
+                  <input
+                    onChange={(e) => setEditTitleTask(e.target.value)}
+                    type="text"
+                    className="w-full mx-3 outline-none bg-gray-200 border-b-2 border-slate-400"
+                    value={edittitletask}
                   />
-                </div>
-                {!edittitleanddescription.status && (
-                  <div className="w-4">
-                    <AiFillDelete
-                      className="text-xl cursor-pointer text-slate-400 hover:text-red-500 drop-shadow-md transition-all group-hover:block hidden"
-                      onClick={() => handleDeleteTask(datatitle, index)}
-                    />
-                  </div>
+                ) : (
+                  <h2 className="mx-3 font-medium break-word">{item.title}</h2>
                 )}
+                {!edittitleanddescription.status ? (
+                  <>
+                    <div className="w-4 mr-3">
+                      {!edittitleanddescription.status ? (
+                        <FaPencilAlt
+                          onClick={() =>
+                            handleEditTitleAndDescription(
+                              index,
+                              datatitle,
+                              item.title,
+                              item.description
+                            )
+                          }
+                          className="text-slate-400 hover:text-slate-800 transition-all cursor-pointer group-hover:block hidden drop-shadow-md"
+                        />
+                      ) : null}
+                    </div>
+                    <div className="w-4">
+                      <AiFillDelete
+                        className="text-xl cursor-pointer text-slate-400 hover:text-red-500 drop-shadow-md transition-all group-hover:block hidden"
+                        onClick={() => handleDeleteTask(datatitle, index)}
+                      />
+                    </div>
+                  </>
+                ) : null}
               </div>
-              <p className="break-word text-sm">{item.description}</p>
+              {edittitleanddescription.title === datatitle &&
+              edittitleanddescription.index === index &&
+              edittitleanddescription.status ? (
+                <textarea
+                  onChange={(e) => setEditDescriptionTask(e.target.value)}
+                  value={editdescriptiontask}
+                  className="outline-none resize-none w-full bg-gray-200 border-b-2 h-20 border-slate-400"
+                />
+              ) : (
+                <p className="break-word text-sm">{item.description}</p>
+              )}
             </div>
-            {!edittitleanddescription.status &&
-            edittitleanddescription.index !== index ? (
+            {edittitleanddescription.title === datatitle &&
+            edittitleanddescription.index === index &&
+            edittitleanddescription.status ? (
+              <div className="flex items-center gap-2 mt-6 justify-between">
+                <SimpleButton
+                  onClick={() =>
+                    setEditTitleAndDescription({
+                      status: false,
+                      index: -1,
+                      title: '',
+                    })
+                  }
+                >
+                  Cancel
+                </SimpleButton>
+                <SimpleButton
+                  onClick={() =>
+                    handleChangeTitleAndDescription(
+                      index,
+                      datatitle,
+                      edittitletask,
+                      editdescriptiontask
+                    )
+                  }
+                >
+                  Save
+                </SimpleButton>
+              </div>
+            ) : (
               <Category
                 Icon={Icon}
                 color={color}
@@ -204,11 +288,6 @@ export const RenderItemListTask = ({
                 description={item.description}
                 index={index}
               />
-            ) : (
-              <div className="flex items-center gap-2">
-                <SimpleButton>Cancel</SimpleButton>
-                <SimpleButton>Save</SimpleButton>
-              </div>
             )}
           </div>
           {!edittitleanddescription.status && (

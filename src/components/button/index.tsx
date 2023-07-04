@@ -5,17 +5,14 @@ export const SimpleButton = ({
   children,
   borderColor,
   disabled,
-  Ref,
 }: {
   onClick?: (value: any) => void;
   children: any;
   borderColor?: string;
   disabled?: boolean;
-  Ref?: any;
 }) => {
   return (
     <button
-      ref={Ref}
       disabled={disabled}
       onClick={onClick}
       className={clsx(
