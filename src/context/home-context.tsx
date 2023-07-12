@@ -43,6 +43,7 @@ interface HomeContextProps {
   donelisttask: SelectOptionListItem[];
   setDoneListTask: Dispatch<SetStateAction<SelectOptionListItem[]>>;
   handleStatusChange: (
+    index: number,
     title: string,
     description: string,
     newcategory: string,
@@ -215,57 +216,91 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const handleStatusChange = (
+    index: number,
     title: string,
     description: string,
     newcategory: string,
     oldcategory: string
   ) => {
     if (oldcategory === 'Todo') {
-      const listitemremove = todolisttask.filter(
-        (item) => item.title !== title
-      );
+      const listitemremove = todolisttask.filter((_item, indexitem) => {
+        return indexitem !== index;
+      });
       setTodoListTask(listitemremove);
     } else if (oldcategory === 'In Progress') {
-      const listitemremove = inprogresslisttask.filter(
-        (item) => item.title !== title
-      );
+      const listitemremove = inprogresslisttask.filter((_item, indexitem) => {
+        return indexitem !== index;
+      });
       setInProgressListTask(listitemremove);
     } else if (oldcategory === 'Done') {
-      const listitemremove = donelisttask.filter(
-        (item) => item.title !== title
-      );
+      const listitemremove = donelisttask.filter((_item, indexitem) => {
+        return indexitem !== index;
+      });
       setDoneListTask(listitemremove);
     }
     if (newcategory === 'Todo') {
-      setTodoListTask((e) => [
-        {
+      const updatelist = [...todolisttask];
+      if (updatelist[0]?.pin) {
+        updatelist.splice(1, 0, {
           title,
           description,
           category: newcategory,
           pin: false,
-        },
-        ...e,
-      ]);
+        });
+        setTodoListTask(updatelist);
+      } else {
+        setTodoListTask((e) => [
+          {
+            title,
+            description,
+            category: newcategory,
+            pin: false,
+          },
+          ...e,
+        ]);
+      }
     } else if (newcategory === 'In Progress') {
-      setInProgressListTask((e) => [
-        {
+      const updatelist = [...inprogresslisttask];
+      if (updatelist[0]?.pin) {
+        updatelist.splice(1, 0, {
           title,
           description,
           category: newcategory,
           pin: false,
-        },
-        ...e,
-      ]);
+        });
+        setInProgressListTask(updatelist);
+      } else {
+        setInProgressListTask((e) => [
+          {
+            title,
+            description,
+            category: newcategory,
+            pin: false,
+          },
+          ...e,
+        ]);
+      }
     } else if (newcategory === 'Done') {
-      setDoneListTask((e) => [
-        {
+      const updatelist = [...donelisttask];
+      if (updatelist[0]?.pin) {
+        updatelist.splice(1, 0, {
           title,
           description,
           category: newcategory,
           pin: false,
-        },
-        ...e,
-      ]);
+        });
+        setDoneListTask(updatelist);
+      } else {
+        setDoneListTask((e) => [
+          {
+            title,
+            description,
+            category: newcategory,
+            pin: false,
+          },
+          ...e,
+        ]);
+      }
     }
     setDropDownCategory({ index: -1, status: false, title: '' });
   };
@@ -334,6 +369,10 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
       }
     } else if (category === 'In Progress') {
       const updatelist = [...inprogresslisttask];
+      if (updatelist[0]?.pin) {
+        updatelist[0].pin = false;
+      }
+
       newarray = updatelist.splice(index, 1);
       if (newarray[0]) {
         newarray[0].pin = true;
@@ -342,6 +381,10 @@ export const HomeContextProvider = ({ children }: { children: ReactNode }) => {
       }
     } else if (category === 'Done') {
       const updatelist = [...donelisttask];
+      if (updatelist[0]?.pin) {
+        updatelist[0].pin = false;
+      }
+
       newarray = updatelist.splice(index, 1);
       if (newarray[0]) {
         newarray[0].pin = true;

@@ -18,10 +18,12 @@ import {
 import { HomeContext } from '@/context/home-context';
 
 export const RenderDropDownCategory = ({
+  index,
   title,
   description,
   datatitle,
 }: {
+  index: number;
   title: string;
   description: string;
   datatitle: string;
@@ -35,7 +37,13 @@ export const RenderDropDownCategory = ({
             key={items.value}
             className="flex items-center p-1 px-4 cursor-pointer hover:bg-slate-300 rounded-xl"
             onClick={() => {
-              handleStatusChange(title, description, items.title, datatitle);
+              handleStatusChange(
+                index,
+                title,
+                description,
+                items.title,
+                datatitle
+              );
             }}
           >
             <items.icon className={clsx(items.color, 'h-4 w-4')} />
@@ -81,6 +89,7 @@ const Category = ({
         datatitle === dropdowncategory.title && (
           <div className="absolute right-0 z-10 flex flex-col justify-center p-1 mt-2 bg-gray-300 border drop-shadow-sm border-slate-300 rounded-2xl">
             <RenderDropDownCategory
+              index={index}
               datatitle={datatitle}
               description={description}
               title={itemtitle}
