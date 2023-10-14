@@ -1,10 +1,8 @@
 import { useContext } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { CategoryTable, InputAddTask } from '@/components/pages/home';
 import { DROP_DOWN_CATEGORY } from '@/constants/select-options';
 import { HomeContext, HomeContextProvider } from '@/context/home-context';
-import { selector, UserActions } from '@/redux';
 
 const IndexContainer = () => {
   const { todolisttask, inprogresslisttask, donelisttask } =
@@ -28,28 +26,21 @@ const IndexContainer = () => {
 };
 
 const Index = () => {
-  const { currentUser } = useSelector(selector.user);
+  // const { currentUser } = useSelector(selector.user);
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  const _onClick = () => {
-    if (currentUser === 'test user') {
-      dispatch(UserActions.setCurrentUser('new user'));
-    }
-    if (currentUser === 'new user') {
-      dispatch(UserActions.setCurrentUser('test user'));
-    }
-  };
+  // const _onClick = () => {
+  //   if (currentUser === 'test user') {
+  //     dispatch(UserActions.setCurrentUser('new user'));
+  //   }
+  //   if (currentUser === 'new user') {
+  //     dispatch(UserActions.setCurrentUser('test user'));
+  //   }
+  // };
 
   return (
     <HomeContextProvider>
-      <div>
-        <span>Testing Redux: {currentUser}</span>{' '}
-        <button type="button" onClick={_onClick}>
-          {' '}
-          Click
-        </button>
-      </div>
       <IndexContainer />
     </HomeContextProvider>
   );
